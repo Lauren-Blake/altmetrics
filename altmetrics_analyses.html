@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="author" content="Lauren Blake" />
+
+<meta name="date" content="2015-09-15" />
+
+<title>On the origin of citations</title>
+
+<script src="altmetrics_analyses_files/jquery-1.11.0/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="altmetrics_analyses_files/bootstrap-3.3.1/css/journal.min.css" rel="stylesheet" />
+<script src="altmetrics_analyses_files/bootstrap-3.3.1/js/bootstrap.min.js"></script>
+<script src="altmetrics_analyses_files/bootstrap-3.3.1/shim/html5shiv.min.js"></script>
+<script src="altmetrics_analyses_files/bootstrap-3.3.1/shim/respond.min.js"></script>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; background-color: #dddddd; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { font-weight: bold; }
+code > span.dt { color: #800000; }
+code > span.dv { color: #0000ff; }
+code > span.bn { color: #0000ff; }
+code > span.fl { color: #800080; }
+code > span.ch { color: #ff00ff; }
+code > span.st { color: #dd0000; }
+code > span.co { color: #808080; font-style: italic; }
+code > span.al { color: #00ff00; font-weight: bold; }
+code > span.fu { color: #000080; }
+code > span.er { color: #ff0000; font-weight: bold; }
+</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img { 
+  max-width:100%; 
+  height: auto; 
+}
+</style>
+<div class="container-fluid main-container">
+
+
+<div id="header">
+<h1 class="title">On the origin of citations</h1>
+<h4 class="author"><em>Lauren Blake</em></h4>
+<h4 class="date"><em>September 15, 2015</em></h4>
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#load-the-data"><span class="toc-section-number">1</span> Load the data</a></li>
+<li><a href="#data-exploration"><span class="toc-section-number">2</span> Data exploration</a><ul>
+<li><a href="#dplyr"><span class="toc-section-number">2.1</span> dplyr</a></li>
+</ul></li>
+</ul>
+</div>
+
+<div id="load-the-data" class="section level1">
+<h1><span class="header-section-number">1</span> Load the data</h1>
+<pre class="sourceCode r"><code class="sourceCode r">counts_raw &lt;-<span class="st"> </span><span class="kw">read.delim</span>(<span class="st">&quot;~/altmetrics/counts-raw.txt&quot;</span>)
+counts_norm &lt;-<span class="st"> </span><span class="kw">read.delim</span>(<span class="st">&quot;~/altmetrics/counts-norm.txt&quot;</span>)</code></pre>
+</div>
+<div id="data-exploration" class="section level1">
+<h1><span class="header-section-number">2</span> Data exploration</h1>
+<p>What’s the distribution of authors in all articles of our data set?</p>
+<div class="figure">
+<img src="altmetrics_analyses_files/figure-html/author_histogram-1.png" />
+</div>
+<div class="figure">
+<img src="altmetrics_analyses_files/figure-html/Facebook-1.png" />
+</div>
+<p>The average number of Facebook shares per paper in the data set is 0.6524187.</p>
+<div id="dplyr" class="section level2">
+<h2><span class="header-section-number">2.1</span> dplyr</h2>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(<span class="st">&quot;dplyr&quot;</span>)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;dplyr&#39;
+## 
+## The following object is masked from &#39;package:stats&#39;:
+## 
+##     filter
+## 
+## The following objects are masked from &#39;package:base&#39;:
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">research &lt;-<span class="st"> </span><span class="kw">filter</span>(counts_raw, articleType ==<span class="st"> &quot;Research Article&quot;</span>)</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">research_2006 &lt;-<span class="st"> </span><span class="kw">filter</span>(research, year ==<span class="st"> </span><span class="dv">2006</span>)
+<span class="kw">nrow</span>(research_2006)</code></pre>
+<pre><code>## [1] 873</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">research_2006_tweet &lt;-<span class="st"> </span><span class="kw">filter</span>(research_2006, backtweetsCount &gt;<span class="st"> </span><span class="dv">0</span>)
+<span class="kw">nrow</span>(research_2006_tweet)</code></pre>
+<pre><code>## [1] 10</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">research_2006_fb_tweet &lt;-<span class="st"> </span><span class="kw">filter</span>(research, year ==<span class="st"> </span><span class="dv">2006</span>,
+                                 facebookCommentCount &gt;<span class="st"> </span><span class="dv">0</span> |
+<span class="st">                                 </span>backtweetsCount &gt;<span class="st"> </span><span class="dv">0</span>)
+<span class="kw">nrow</span>(research_2006_fb_tweet)</code></pre>
+<pre><code>## [1] 13</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">research_2006_fb_tweet_disease &lt;-<span class="st"> </span><span class="kw">filter</span>(research, year ==<span class="st"> </span><span class="dv">2006</span>,
+                                         facebookCommentCount &gt;<span class="st"> </span><span class="dv">0</span> |
+<span class="st">                                         </span>backtweetsCount &gt;<span class="st"> </span><span class="dv">0</span>,
+                                         <span class="kw">grepl</span>(<span class="st">&quot;Infectious Diseases&quot;</span>,
+                                               plosSubjectTags))
+<span class="kw">nrow</span>(research_2006_fb_tweet_disease)</code></pre>
+<pre><code>## [1] 3</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">colnames</span>(research)</code></pre>
+<pre><code>##  [1] &quot;doi&quot;                       &quot;pubDate&quot;                  
+##  [3] &quot;journal&quot;                   &quot;title&quot;                    
+##  [5] &quot;articleType&quot;               &quot;authorsCount&quot;             
+##  [7] &quot;f1000Factor&quot;               &quot;backtweetsCount&quot;          
+##  [9] &quot;deliciousCount&quot;            &quot;pmid&quot;                     
+## [11] &quot;plosSubjectTags&quot;           &quot;plosSubSubjectTags&quot;       
+## [13] &quot;facebookShareCount&quot;        &quot;facebookLikeCount&quot;        
+## [15] &quot;facebookCommentCount&quot;      &quot;facebookClickCount&quot;       
+## [17] &quot;mendeleyReadersCount&quot;      &quot;almBlogsCount&quot;            
+## [19] &quot;pdfDownloadsCount&quot;         &quot;xmlDownloadsCount&quot;        
+## [21] &quot;htmlDownloadsCount&quot;        &quot;almCiteULikeCount&quot;        
+## [23] &quot;almScopusCount&quot;            &quot;almPubMedCentralCount&quot;    
+## [25] &quot;almCrossRefCount&quot;          &quot;plosCommentCount&quot;         
+## [27] &quot;plosCommentResponsesCount&quot; &quot;wikipediaCites&quot;           
+## [29] &quot;year&quot;                      &quot;daysSincePublished&quot;       
+## [31] &quot;wosCountThru2010&quot;          &quot;wosCountThru2011&quot;</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">article_info &lt;-<span class="st"> </span><span class="kw">select</span>(research, doi, pubDate, journal, title,
+                       articleType, authorsCount)
+<span class="kw">colnames</span>(article_info)</code></pre>
+<pre><code>## [1] &quot;doi&quot;          &quot;pubDate&quot;      &quot;journal&quot;      &quot;title&quot;       
+## [5] &quot;articleType&quot;  &quot;authorsCount&quot;</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">article_info &lt;-<span class="st"> </span><span class="kw">select</span>(research, doi:authorsCount)
+<span class="kw">colnames</span>(article_info)</code></pre>
+<pre><code>## [1] &quot;doi&quot;          &quot;pubDate&quot;      &quot;journal&quot;      &quot;title&quot;       
+## [5] &quot;articleType&quot;  &quot;authorsCount&quot;</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">metrics &lt;-<span class="st"> </span><span class="kw">select</span>(research, <span class="kw">contains</span>(<span class="st">&quot;Count&quot;</span>))
+<span class="kw">colnames</span>(metrics)</code></pre>
+<pre><code>##  [1] &quot;authorsCount&quot;              &quot;backtweetsCount&quot;          
+##  [3] &quot;deliciousCount&quot;            &quot;facebookShareCount&quot;       
+##  [5] &quot;facebookLikeCount&quot;         &quot;facebookCommentCount&quot;     
+##  [7] &quot;facebookClickCount&quot;        &quot;mendeleyReadersCount&quot;     
+##  [9] &quot;almBlogsCount&quot;             &quot;pdfDownloadsCount&quot;        
+## [11] &quot;xmlDownloadsCount&quot;         &quot;htmlDownloadsCount&quot;       
+## [13] &quot;almCiteULikeCount&quot;         &quot;almScopusCount&quot;           
+## [15] &quot;almPubMedCentralCount&quot;     &quot;almCrossRefCount&quot;         
+## [17] &quot;plosCommentCount&quot;          &quot;plosCommentResponsesCount&quot;
+## [19] &quot;wosCountThru2010&quot;          &quot;wosCountThru2011&quot;</code></pre>
+</div>
+</div>
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
